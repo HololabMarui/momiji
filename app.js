@@ -160,7 +160,7 @@
     const v = {
       voteId: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       deviceId, clientTime: new Date().toISOString(),
-      choices: st.sel.slice(), age: st.attrs.age || "", gender: st.attrs.gender || "",
+      choices: st.sel.slice(), meta: st.sel.map(id => [id, TEAMS[byId[id].team].name, byId[id].title]), age: st.attrs.age || "", gender: st.attrs.gender || "",
       home: st.attrs.home || "", ws: st.attrs.ws || "", comment: $("#comment").value.trim().slice(0, 80),
     };
     const log = load(LS.log); log.push(v); save(LS.log, log);
