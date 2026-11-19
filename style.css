@@ -147,3 +147,7 @@ img{-webkit-user-drag:none}
 .pg-arrow[hidden]{display:none}
 .dots i,.dots .more{cursor:pointer}
 @media (hover:hover){.pager{cursor:grab}}
+.vote-go{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;font-size:18px;padding:15px 10px}
+.vote-go .tri{font-size:13px;line-height:1}
+#m-vote{line-height:1.35}
+#m-vote small{display:block;font-size:14px;font-weight:400;opacity:.9}

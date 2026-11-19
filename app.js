@@ -133,7 +133,7 @@
     $("#m-img").src = large(i);
     $("#m-badges").innerHTML = `<span class="team ${i.team}">${TEAMS[i.team].name}</span><span class="when">${i.when}</span>${i.has3d ? '<span class="when">3Dモデルあり</span>' : ""}`;
     $("#m-title").textContent = i.title; $("#m-who").textContent = i.who; $("#m-when").textContent = i.when; $("#m-where").textContent = i.where; $("#m-scene").textContent = i.scene;
-    const on = st.sel.includes(i.id); $("#m-vote").textContent = on ? "♥ いいな に入っています（タップではずす）" : "♥ いいな に入れる"; $("#m-vote").dataset.id = i.id;
+    const on = st.sel.includes(i.id); $("#m-vote").innerHTML = on ? "♥ いいな に入っています<small>（タップではずす）</small>" : "♥ いいな に入れる"; $("#m-vote").dataset.id = i.id;
     $("#m-vote").style.background = on ? "#8c8178" : "";
   }
   $("#m-vote").addEventListener("click", e => { toggle(e.currentTarget.dataset.id); fillModal(); });
