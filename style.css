@@ -43,6 +43,7 @@ img{-webkit-user-drag:none}
 /* 投票 */
 .vote-body{flex:1;display:flex;min-height:0}
 .pager-wrap{flex:1;display:flex;flex-direction:column;min-width:0}
+.pager-area{flex:1;position:relative;min-height:0;display:flex}
 .pager{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .pager::-webkit-scrollbar{display:none}
 .page{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:14px;padding:16px 20px 6px}
@@ -141,3 +142,8 @@ img{-webkit-user-drag:none}
 
 .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:18px;padding:14px 24px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:20}
 .toast.on{opacity:1;transform:translateX(-50%)}
+.pg-arrow{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;background:rgba(43,36,32,.78);color:#fff;font-size:38px;line-height:52px;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:2}
+.pg-arrow.prev{left:6px} .pg-arrow.next{right:6px}
+.pg-arrow[hidden]{display:none}
+.dots i,.dots .more{cursor:pointer}
+@media (hover:hover){.pager{cursor:grab}}

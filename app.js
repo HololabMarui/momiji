@@ -75,8 +75,24 @@
   }
   function renderDots() {
     const n = $("#pager").children.length, cur = Math.round($("#pager").scrollLeft / ($("#pager").clientWidth || 1));
-    $("#dots").innerHTML = n > 1 ? [...Array(n)].map((_, k) => `<i class="${k === cur ? "on" : ""}"></i>`).join("") + (cur < n - 1 ? "　→ 横にスワイプするとまだあります" : "") : "";
+    $("#dots").innerHTML = n > 1 ? [...Array(n)].map((_, k) => `<i class="${k === cur ? "on" : ""}"></i>`).join("") + (cur < n - 1 ? '<span class="more">→ 横にスワイプするとまだあります</span>' : "") : "";
+    $("#pg-prev").hidden = !(n > 1 && cur > 0); $("#pg-next").hidden = !(n > 1 && cur < n - 1);
   }
+  // PC向け：矢印ボタン・ドット・マウスホイール・ドラッグでもページ送り
+  const pg = $("#pager");
+  const goPage = d => { const w = pg.clientWidth, n = pg.children.length, cur = Math.round(pg.scrollLeft / w); pg.scrollTo({ left: Math.max(0, Math.min(n - 1, cur + d)) * w, behavior: "smooth" }); };
+  $("#pg-prev").addEventListener("click", () => goPage(-1));
+  $("#pg-next").addEventListener("click", () => goPage(1));
+  $("#dots").addEventListener("click", e => { const k = [...$("#dots").querySelectorAll("i")].indexOf(e.target); if (k >= 0) pg.scrollTo({ left: k * pg.clientWidth, behavior: "smooth" }); else if (e.target.closest(".more")) goPage(1); });
+  let wheelLock = 0;
+  pg.addEventListener("wheel", e => { if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; e.preventDefault(); const now = Date.now(); if (now - wheelLock < 500) return; wheelLock = now; goPage(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+  let drag = null, dragged = false;
+  pg.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; drag = { x: e.clientX, left: pg.scrollLeft }; dragged = false; });
+  window.addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 6) { dragged = true; pg.style.scrollSnapType = "none"; pg.scrollLeft = drag.left - dx; } });
+  window.addEventListener("pointerup", e => { if (!drag) return; const dx = e.clientX - drag.x; pg.style.scrollSnapType = ""; if (dragged) { pg.scrollLeft = drag.left; goPage(dx < -60 ? 1 : dx > 60 ? -1 : 0); } drag = null; });
+  pg.addEventListener("click", e => { if (dragged) { e.stopPropagation(); e.preventDefault(); dragged = false; } }, true);
+  pg.addEventListener("dragstart", e => e.preventDefault());
+
   $("#pager").addEventListener("scroll", () => { clearTimeout(renderDots.t); renderDots.t = setTimeout(renderDots, 80); resetIdle(); });
   $("#pager").addEventListener("click", e => {
     const card = e.target.closest(".card"); if (!card) return;
