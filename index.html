@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="もみじ台いいな投票">
+<title>2050年のもみじ台 いいな投票</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 待受画面 -->
+<section id="v-attract" class="view active" aria-label="待受画面">
+  <div class="slides" id="slides"></div>
+  <div class="attract-panel">
+    <p class="kicker">もみじ台 3D都市モデルワークショップ（11月15日）から</p>
+    <h1>2050年の「学びと成長のタウンセンター」<br>どれが いいな？</h1>
+    <ol class="rules">
+      <li>ワークショップ参加者が生成AIで描いた<span id="img-count"></span>枚の絵から</li>
+      <li>「いいな」と思うものを <b>3枚まで</b> えらんで</li>
+      <li>かんたんな質問に答えて投票！</li>
+    </ol>
+    <div class="start-hint">画面をタップしてはじめる</div>
+  </div>
+</section>
+
+<!-- 投票画面 -->
+<section id="v-vote" class="view" aria-label="投票画面">
+  <header class="bar">
+    <div class="bar-title" id="staff-trigger">2050年のタウンセンター、<b>どれがいいな？</b></div>
+    <div class="filters" role="tablist">
+      <button class="chip on" data-filter="all">すべて</button>
+      <button class="chip" data-filter="A">A班</button>
+      <button class="chip" data-filter="M">むじゃき班</button>
+    </div>
+    <button class="link-btn" data-go="about">ワークショップについて</button>
+  </header>
+  <div class="vote-body">
+    <div class="pager-wrap">
+      <div class="pager" id="pager"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+    <aside class="tray">
+      <div class="tray-title">あなたの「いいな」</div>
+      <div class="slots" id="slots"></div>
+      <div class="tray-msg" id="tray-msg"></div>
+      <button class="primary" id="to-attr" disabled>これで投票する →</button>
+      <button class="ghost" data-go="attract">やめる</button>
+    </aside>
+  </div>
+</section>
+
+<!-- 属性入力 -->
+<section id="v-attr" class="view" aria-label="あなたについて">
+  <header class="bar">
+    <button class="link-btn" data-go="vote">← えらびなおす</button>
+    <div class="bar-title"><b>あなたについて</b>教えてください（答えたくない項目はとばしてOK）</div>
+    <span></span>
+  </header>
+  <div class="attr-body">
+    <div class="attr-picked" id="attr-picked"></div>
+    <div class="attr-form">
+      <div class="q"><div class="q-label">年代</div><div class="opts" data-key="age">
+        <button>10代未満</button><button>10代</button><button>20〜30代</button><button>40〜50代</button><button>60〜70代</button><button>80代以上</button>
+      </div></div>
+      <div class="q"><div class="q-label">性別</div><div class="opts" data-key="gender">
+        <button>男性</button><button>女性</button><button>その他</button><button>答えない</button>
+      </div></div>
+      <div class="q"><div class="q-label">お住まい</div><div class="opts" data-key="home">
+        <button>もみじ台</button><button>もみじ台以外の厚別区</button><button>それ以外</button>
+      </div></div>
+      <div class="q"><div class="q-label">11/15のワークショップに</div><div class="opts" data-key="ws">
+        <button>参加した</button><button>参加していない</button>
+      </div></div>
+      <div class="q"><div class="q-label">ひとこと（任意）</div>
+        <input id="comment" maxlength="80" placeholder="こんなこともできるといいな、など" autocomplete="off">
+      </div>
+      <button class="primary big" id="submit">この内容で投票する</button>
+    </div>
+  </div>
+</section>
+
+<!-- 完了画面 -->
+<section id="v-done" class="view" aria-label="投票ありがとうございました">
+  <div class="done-body">
+    <h2>投票ありがとうございました！</h2>
+    <div class="done-cols">
+      <div>
+        <h3>あなたがえらんだ「いいな」</h3>
+        <div class="done-mine" id="done-mine"></div>
+      </div>
+      <div>
+        <h3>みんなの「いいな」いまの上位</h3>
+        <div class="done-rank" id="done-rank"></div>
+      </div>
+    </div>
+    <p class="done-note">この結果は、これからのもみじ台のまちづくりの参考にします。</p>
+    <button class="primary" data-go="attract">最初の画面にもどる（<span id="done-count"></span>）</button>
+  </div>
+</section>
+
+<!-- ワークショップについて -->
+<section id="v-about" class="view" aria-label="ワークショップについて">
+  <header class="bar">
+    <button class="link-btn" data-go="vote">← 投票にもどる</button>
+    <div class="bar-title"><b>ワークショップについて</b></div>
+    <span></span>
+  </header>
+  <div class="about-body">
+    <div class="about-tabs">
+      <button class="chip on" data-tab="overview">ワークショップの概要</button>
+      <button class="chip" data-tab="A">A班のペルソナ</button>
+      <button class="chip" data-tab="M">むじゃき班のペルソナ</button>
+    </div>
+    <div class="about-pane on" data-pane="overview">
+      <div class="overview">
+        <div>
+          <h3>みなさんのアイデアで2050年のもみじ台を描こう！</h3>
+          <p>2026年11月15日（日）、もみじ台管理センターで「もみじ台3D都市モデルワークショップ」を開きました。札幌市が検討中の「もみじ台グランドデザイン2050」を知り、そのコンセプト<b>「学びと成長のまち もみじ台」</b>の中心となる<b>「学びと成長のタウンセンター」</b>で何ができるといいかを、参加者のみなさんと考えました。</p>
+          <p>この画面の絵は、参加者が考えた場面をもとに生成AIで描いたものです。</p>
+        </div>
+        <ol class="steps">
+          <li><b>知る</b><span>グランドデザインの説明を聞き、iPadのARで3Dのもみじ台をのぞいてみる</span></li>
+          <li><b>考える</b><span>「だれが・いつ・どこで・どんなことができるといいか」を付箋で出し合い、ペルソナ（登場人物）を3人ずつ決める</span></li>
+          <li><b>形にする</b><span>場面をことばにして、生成AI（Gemini）で絵にする。推し案はMeshyで3Dモデルに</span></li>
+          <li><b>共有する</b><span>3D都市モデルの上に絵と3Dモデルを置いて、班ごとに発表</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="about-pane" data-pane="A"></div>
+    <div class="about-pane" data-pane="M"></div>
+  </div>
+</section>
+
+<!-- 画像詳細 -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" id="m-close" aria-label="とじる">×</button>
+    <div class="modal-img"><img id="m-img" alt=""></div>
+    <div class="modal-info">
+      <div class="badges" id="m-badges"></div>
+      <h2 id="m-title"></h2>
+      <dl class="facts">
+        <dt>だれが</dt><dd id="m-who"></dd>
+        <dt>いつ</dt><dd id="m-when"></dd>
+        <dt>どこで</dt><dd id="m-where"></dd>
+      </dl>
+      <p class="scene" id="m-scene"></p>
+      <button class="primary" id="m-vote"></button>
+      <div class="modal-nav"><button id="m-prev">‹ まえ</button><button id="m-next">つぎ ›</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- スタッフメニュー（タイトルを3秒長押し） -->
+<div class="modal" id="staff" aria-hidden="true">
+  <div class="staff-card">
+    <h2>スタッフメニュー</h2>
+    <p>端末名：<b id="s-device"></b></p>
+    <p>送信モード：<b id="s-mode"></b></p>
+    <p>この端末の未送信：<b id="s-queue"></b> 件 ／ この端末の投票数：<b id="s-local"></b> 件</p>
+    <div class="staff-actions">
+      <button id="s-retry">今すぐ再送</button>
+      <button id="s-csv">この端末の投票をCSVで保存</button>
+      <button id="s-close">とじる</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

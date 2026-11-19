@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>いいな投票 結果モニター</title>
+<style>
+:root{--bg:#faf6f0;--ink:#2b2420;--sub:#6d625a;--line:#e4dbd0;--accent:#d24a1f;--res:#d24a1f;--oth:#e9b9a6;--a:#2b7a78;--m:#b0398b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;padding:24px 32px}
+header{display:flex;align-items:baseline;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:26px;margin:0}
+.kpi{font-size:18px;color:var(--sub)} .kpi b{font-size:34px;color:var(--ink);margin:0 4px}
+.legend{font-size:14px;color:var(--sub);display:flex;gap:16px;align-items:center}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:36px 120px 1fr;gap:14px;align-items:center;background:#fff;border-radius:12px;padding:8px 14px}
+.rk{font-size:22px;font-weight:800;text-align:center;color:var(--accent)}
+.row img{width:120px;aspect-ratio:16/9;object-fit:cover;border-radius:8px}
+.name{font-size:16px;font-weight:600;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.team{font-size:12px;color:#fff;padding:2px 8px;border-radius:999px} .team.A{background:var(--a)} .team.M{background:var(--m)}
+.bar{display:flex;height:22px;align-items:center;gap:8px}
+.seg{height:100%;display:flex}
+.seg span{height:100%}
+.n{font-size:18px;font-weight:700;white-space:nowrap}
+.n small{font-size:13px;color:var(--sub);font-weight:400;margin-left:6px}
+.side{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.box{background:#fff;border-radius:12px;padding:14px 18px}
+.box h2{font-size:16px;margin:0 0 8px}
+.kv{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;font-size:15px}
+.kv .b{height:12px;background:var(--accent);border-radius:3px}
+.comments{font-size:15px;line-height:1.6;max-height:260px;overflow:auto;margin:0;padding-left:1.2em}
+.upd{font-size:13px;color:var(--sub);margin-left:auto}
+.err{color:#b00020}
+</style>
+</head>
+<body>
+<header>
+  <h1>2050年のタウンセンター いいな投票 結果モニター</h1>
+  <div class="kpi">投票した人<b id="total">–</b>人</div>
+  <div class="legend"><span><i style="background:var(--res)"></i>もみじ台在住</span><span><i style="background:var(--oth)"></i>それ以外・無回答</span></div>
+  <div class="upd" id="upd"></div>
+</header>
+<div class="rows" id="rows"></div>
+<div class="side">
+  <div class="box"><h2>投票した人の年代</h2><div class="kv" id="age"></div></div>
+  <div class="box"><h2>お住まい・WS参加</h2><div class="kv" id="home"></div></div>
+  <div class="box"><h2>ひとこと（新しい順）</h2><ol class="comments" id="comments"></ol></div>
+</div>
+<script src="data.js"></script>
+<script>
+const C = window.VOTE_CONFIG, IMGS = window.IMAGES, TEAMS = window.TEAMS;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function kv(el, obj, order) {
+  const keys = order.filter(k => obj[k]).concat(Object.keys(obj).filter(k => !order.includes(k)));
+  const max = Math.max(1, ...keys.map(k => obj[k]));
+  el.innerHTML = keys.map(k => `<span>${esc(k || "無回答")}</span><div class="b" style="width:${obj[k] / max * 100}%"></div><span>${obj[k]}</span>`).join("") || "<span>まだありません</span>";
+}
+async function tick() {
+  try {
+    let d;
+    if (!C.GAS_URL) { // テストモード：この端末の投票で表示
+      const log = JSON.parse(localStorage.getItem("momiji_log") || "[]");
+      d = { total: log.length, counts: {}, resident: {}, age: {}, home: {}, ws: {}, comments: [] };
+      log.forEach(v => { v.choices.forEach(id => { d.counts[id] = (d.counts[id] || 0) + 1; if (v.home === "もみじ台") d.resident[id] = (d.resident[id] || 0) + 1; });
+        d.age[v.age] = (d.age[v.age] || 0) + 1; d.home[v.home] = (d.home[v.home] || 0) + 1; d.ws[v.ws] = (d.ws[v.ws] || 0) + 1; if (v.comment) d.comments.unshift(v.comment); });
+    } else {
+      d = await (await fetch(C.GAS_URL + "?action=results&detail=1&t=" + Date.now())).json();
+    }
+    document.getElementById("total").textContent = d.total;
+    const list = IMGS.map(i => ({ i, n: d.counts[i.id] || 0, r: (d.resident || {})[i.id] || 0 })).sort((a, b) => b.n - a.n);
+    const max = Math.max(1, ...list.map(x => x.n));
+    let rank = 0, prev = -1;
+    document.getElementById("rows").innerHTML = list.map((x, k) => { if (x.n !== prev) { rank = k + 1; prev = x.n; }
+      return `<div class="row"><div class="rk">${rank}</div><img src="img/${x.i.id}_s.webp" alt="">
+      <div><div class="name"><span class="team ${x.i.team}">${TEAMS[x.i.team].name}</span>${esc(x.i.title)}</div>
+      <div class="bar"><div class="seg" style="width:${x.n / max * 80}%"><span style="width:${x.n ? x.r / x.n * 100 : 0}%;background:var(--res)"></span><span style="flex:1;background:var(--oth)"></span></div>
+      <span class="n">${x.n}票<small>うち もみじ台 ${x.r}</small></span></div></div></div>`; }).join("");
+    kv(document.getElementById("age"), d.age || {}, ["10代未満","10代","20〜30代","40〜50代","60〜70代","80代以上",""]);
+    const hw = {}; Object.entries(d.home || {}).forEach(([k, v]) => hw[k || "お住まい無回答"] = v); Object.entries(d.ws || {}).forEach(([k, v]) => hw["WS " + (k || "無回答")] = v);
+    kv(document.getElementById("home"), hw, ["もみじ台","もみじ台以外の厚別区","それ以外"]);
+    document.getElementById("comments").innerHTML = (d.comments || []).slice(0, 30).map(c => `<li>${esc(c)}</li>`).join("") || "<li>まだありません</li>";
+    document.getElementById("upd").textContent = "更新 " + new Date().toLocaleTimeString("ja-JP") + (C.GAS_URL ? "" : "（テストモード）");
+  } catch (e) { document.getElementById("upd").innerHTML = '<span class="err">通信できません。再試行します</span>'; }
+}
+tick(); setInterval(tick, 15000);
+</script>
+</body>
+</html>
