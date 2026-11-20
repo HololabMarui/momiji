@@ -151,3 +151,15 @@ img{-webkit-user-drag:none}
 .vote-go .tri{font-size:13px;line-height:1}
 #m-vote{line-height:1.35}
 #m-vote small{display:block;font-size:14px;font-weight:400;opacity:.9}
+
+/* 終了画面 */
+#v-end{background:#fff;overflow:hidden}
+.end-bg{position:absolute;inset:-4%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:0;filter:saturate(.6)}
+.end-bg img{width:100%;height:100%;object-fit:cover}
+.end-white{position:absolute;inset:0;background:#fff;opacity:0;animation:whiteout 3.5s ease-in forwards}
+@keyframes whiteout{to{opacity:.9}}
+.end-msg{position:relative;margin:auto;text-align:center;padding:0 60px;opacity:0;animation:rise 2.4s ease-out 2.8s forwards}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.end-msg h1{font-size:40px;line-height:1.5;margin:0 0 26px;color:var(--ink);font-weight:700;letter-spacing:.04em}
+#end-lines p{font-size:19px;line-height:1.9;margin:0;color:var(--sub)}
+.end-foot{margin-top:34px;font-size:14px;color:#a89c90;letter-spacing:.1em}

@@ -19,7 +19,11 @@
 
   /* ---------- 画面切替 ---------- */
   let current = "attract";
+  const preview = new URLSearchParams(location.search).get("preview");
+  const ended = () => preview === "end" || (C.END_AT && Date.now() >= Date.parse(C.END_AT));
   function show(v) {
+    if (v === "attract" && ended()) v = "end";
+    if (v === "end") renderEnd();
     current = v;
     $$(".view").forEach(el => el.classList.toggle("active", el.id === "v-" + v));
     closeModal(); $("#toast").classList.remove("on");
@@ -45,7 +49,18 @@
     clearInterval(doneT);
   }
   function stopAttract() { clearInterval(slideT); }
-  $("#v-attract").addEventListener("click", () => { resetSession(); show("vote"); });
+  $("#v-attract").addEventListener("click", () => { if (ended()) { show("end"); return; } resetSession(); show("vote"); });
+
+  /* ---------- 終了画面 ---------- */
+  function renderEnd() {
+    $("#end-title").textContent = C.END_TITLE || "";
+    $("#end-lines").innerHTML = (C.END_LINES || []).map(t => `<p></p>`).join("");
+    [...$("#end-lines").children].forEach((p, k) => p.textContent = C.END_LINES[k]);
+    const bg = $("#end-bg");
+    if (!bg.children.length) shuffle(IMGS).concat(shuffle(IMGS)).slice(0, 12).forEach(i => { const im = new Image(); im.src = thumb(i); im.alt = ""; bg.appendChild(im); });
+  }
+  // 待受画面の表示中に終了時刻になったら切り替え（投票中の人はそのまま最後まで投票できる）
+  setInterval(() => { if (current === "attract" && ended()) show("end"); }, 15000);
   $("#img-count").textContent = IMGS.length;
 
   function resetSession() {
@@ -245,7 +260,14 @@
 
   /* ---------- スタッフメニュー（タイトル3秒長押し） ---------- */
   let pressT;
-  const trig = $("#staff-trigger");
+  ["#staff-trigger", ".end-foot"].forEach(sel => {
+    const el = $(sel);
+    el.addEventListener("touchstart", () => { pressT = setTimeout(openStaff, 3000); }, { passive: true });
+    el.addEventListener("touchend", () => clearTimeout(pressT));
+    el.addEventListener("mousedown", () => { pressT = setTimeout(openStaff, 3000); });
+    el.addEventListener("mouseup", () => clearTimeout(pressT));
+  });
+  const trig = { addEventListener() {} };
   trig.addEventListener("touchstart", () => { pressT = setTimeout(openStaff, 3000); }, { passive: true });
   trig.addEventListener("touchend", () => clearTimeout(pressT));
   trig.addEventListener("mousedown", () => { pressT = setTimeout(openStaff, 3000); });
