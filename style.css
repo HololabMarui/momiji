@@ -50,7 +50,7 @@ img{-webkit-user-drag:none}
 .card{position:relative;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);display:flex;flex-direction:column;min-height:0}
 .card .ph{flex:1;min-height:0;position:relative}
 .card .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.card .cap{padding:7px 10px;font-size:15px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.card .cap{padding:7px 8px;font-size:clamp(13px,1.25vw,15px);letter-spacing:-.01em;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
 .team{font-size:12px;font-weight:700;color:#fff;padding:2px 8px;border-radius:999px;flex:none}
 .team.A{background:var(--a)} .team.M{background:var(--m)}
 .heart{position:absolute;top:8px;right:8px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;font-size:26px;color:#b9aea3;box-shadow:0 1px 4px rgba(0,0,0,.2)}
