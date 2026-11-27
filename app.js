@@ -148,7 +148,7 @@
   function fillModal() {
     const list = mlist, i = list[(st.modalIdx + list.length) % list.length]; st.modalIdx = list.indexOf(i);
     $("#m-img").src = large(i);
-    $("#m-badges").innerHTML = `<span class="team ${i.team}">${TEAMS[i.team].name}</span><span class="when">${i.when}</span>${i.has3d ? '<span class="when">3Dモデルあり</span>' : ""}`;
+    $("#m-badges").innerHTML = `<span class="when">${i.when}</span>${i.has3d ? '<span class="when">3Dモデルあり</span>' : ""}`;
     $("#m-title").textContent = i.title; $("#m-who").textContent = i.who; $("#m-when").textContent = i.when; $("#m-where").textContent = i.where; $("#m-scene").textContent = i.scene;
     const on = st.sel.includes(i.id); $("#m-vote").innerHTML = on ? "♥ いいな に入っています<small>（タップではずす）</small>" : "♥ いいな に入れる"; $("#m-vote").dataset.id = i.id;
     $("#m-vote").style.background = on ? "#8c8178" : "";

@@ -74,7 +74,7 @@ async function tick() {
     let rank = 0, prev = -1;
     document.getElementById("rows").innerHTML = list.map((x, k) => { if (x.n !== prev) { rank = k + 1; prev = x.n; }
       return `<div class="row"><div class="rk">${rank}</div><img src="img/${x.i.id}_s.webp" alt="">
-      <div><div class="name"><span class="team ${x.i.team}">${TEAMS[x.i.team].name}</span>${esc(x.i.title)}</div>
+      <div><div class="name">${esc(x.i.title)}</div>
       <div class="bar"><div class="seg" style="width:${x.n / max * 80}%"><span style="width:${x.n ? x.r / x.n * 100 : 0}%;background:var(--res)"></span><span style="flex:1;background:var(--oth)"></span></div>
       <span class="n">${x.n}票<small>うち もみじ台 ${x.r}</small></span></div></div></div>`; }).join("");
     kv(document.getElementById("age"), d.age || {}, ["10代未満","10代","20〜30代","40〜50代","60〜70代","80代以上",""]);
