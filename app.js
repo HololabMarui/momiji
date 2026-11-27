@@ -15,6 +15,8 @@
 
   const st = { order: [], filter: "all", sel: [], attrs: {}, modalIdx: 0 };
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  // 指定した画像が先頭に来たら、先頭以外のランダムな位置と入れ替える
+  const avoidFirst = (arr, idOf) => { const ng = C.NOT_FIRST || []; if (arr.length > 1 && ng.includes(idOf(arr[0]))) { const ok = arr.map((x, k) => k).filter(k => k > 0 && !ng.includes(idOf(arr[k]))); if (ok.length) { const j = ok[Math.floor(Math.random() * ok.length)]; [arr[0], arr[j]] = [arr[j], arr[0]]; } } return arr; };
   const thumb = i => `img/${i.id}_s.webp`, large = i => `img/${i.id}_l.webp`;
 
   /* ---------- 画面切替 ---------- */
@@ -42,7 +44,7 @@
   let slideT, slideI = 0;
   function startAttract() {
     const box = $("#slides");
-    if (!box.children.length) shuffle(IMGS).forEach(i => { const im = new Image(); im.src = large(i); im.alt = ""; box.appendChild(im); });
+    if (!box.children.length) avoidFirst(shuffle(IMGS), i => i.id).forEach(i => { const im = new Image(); im.src = large(i); im.alt = ""; box.appendChild(im); });
     const ims = box.children; [...ims].forEach(x => x.classList.remove("on")); ims[slideI % ims.length].classList.add("on");
     clearInterval(slideT);
     slideT = setInterval(() => { ims[slideI % ims.length].classList.remove("on"); slideI++; ims[slideI % ims.length].classList.add("on"); }, 5000);
@@ -64,7 +66,7 @@
   $("#img-count").textContent = IMGS.length;
 
   function resetSession() {
-    st.sel = []; st.attrs = {}; st.order = shuffle(IMGS.map(i => i.id)); st.filter = "all";
+    st.sel = []; st.attrs = {}; st.order = avoidFirst(shuffle(IMGS.map(i => i.id)), x => x); st.filter = "all";
     $$(".filters .chip").forEach(c => c.classList.toggle("on", c.dataset.filter === "all"));
     $$(".opts button").forEach(b => b.classList.remove("on")); $("#comment").value = "";
     renderGrid(); renderTray();
