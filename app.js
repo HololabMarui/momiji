@@ -81,7 +81,7 @@
         c.innerHTML = `<div class="ph"><img src="${thumb(i)}" alt="" loading="lazy">
           <span class="when-tag">${i.when}</span>${i.has3d ? '<span class="badge3d">3Dあり</span>' : ""}
           <span class="order"></span><button class="heart" aria-label="いいな">♥</button></div>
-          <div class="cap"><span class="team ${i.team}">${TEAMS[i.team].name}</span>${i.title}</div>`;
+          <div class="cap">${i.title}</div>`;
         page.appendChild(c);
       });
       pager.appendChild(page);
